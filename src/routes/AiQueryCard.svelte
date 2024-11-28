@@ -7,6 +7,9 @@
 	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import { enhance } from '$app/forms';
+	import sqlLang from 'svelte-highlight/languages/sql';
+	import Highlight from 'svelte-highlight';
+	import { format } from 'sql-formatter';
 
 	interface Props {
 		tableData?: object[];
@@ -56,7 +59,13 @@
 				<ChevronsUpDown />
 			</Collapsible.Trigger>
 			<Collapsible.Content>
-				<form method="POST" use:enhance>
+				<Highlight
+					class="overflow-hidden rounded-lg "
+					language={sqlLang}
+					code={format(aiQuery ?? '', { language: 'sqlite' })}
+				/>
+
+				<!-- <form method="POST" use:enhance>
 					<div class="my-4 flex flex-col gap-2 md:flex-row">
 						<Textarea
 							class="bg-gray-100 font-mono"
@@ -66,7 +75,7 @@
 						/>
 						<Button type="submit">Run Query</Button>
 					</div>
-				</form>
+				</form> -->
 			</Collapsible.Content>
 		</Collapsible.Root>
 

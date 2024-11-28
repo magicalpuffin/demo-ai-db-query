@@ -4,9 +4,14 @@
 	import AboutCard from './AboutCard.svelte';
 	import AiQueryCard from './AiQueryCard.svelte';
 	import DatabaseCard from './DatabaseCard.svelte';
+	import githubDark from 'svelte-highlight/styles/github-dark';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
+
+<svelte:head>
+	{@html githubDark}
+</svelte:head>
 
 <Tabs.Root value="ai_query">
 	<Tabs.List class="grid w-full grid-cols-3">

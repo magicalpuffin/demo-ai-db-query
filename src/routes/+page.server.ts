@@ -1,6 +1,4 @@
-// import { db } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
-// import Database from 'better-sqlite3';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ platform }) => {

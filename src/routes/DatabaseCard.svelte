@@ -1,4 +1,8 @@
 <script lang="ts">
+	import sqlLang from 'svelte-highlight/languages/sql';
+	import Highlight from 'svelte-highlight';
+	import { format } from 'sql-formatter';
+
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card/';
 
@@ -26,8 +30,18 @@
 				<Table.Body>
 					{#each tableSchema as dataRow}
 						<Table.Row>
-							{#each Object.values(dataRow) as dataValue}
-								<Table.Cell>{dataValue}</Table.Cell>
+							{#each Object.entries(dataRow) as dataValue}
+								{#if dataValue[0] === 'sql'}
+									<Table.Cell>
+										<Highlight
+											class="overflow-hidden rounded-lg "
+											language={sqlLang}
+											code={format(dataValue[1], { language: 'sqlite' })}
+										/>
+									</Table.Cell>
+								{:else}
+									<Table.Cell>{dataValue[1]}</Table.Cell>
+								{/if}
 							{/each}
 						</Table.Row>
 					{/each}
