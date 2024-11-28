@@ -5,6 +5,8 @@
 	import * as Card from '$lib/components/ui/card/';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
+	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
+	import { enhance } from '$app/forms';
 
 	interface Props {
 		tableData?: object[];
@@ -12,6 +14,7 @@
 		errorMessage?: string;
 	}
 	let { tableData = [], aiQuery = '', errorMessage }: Props = $props();
+	let loading = $state(false);
 </script>
 
 <Card.Root>
@@ -26,10 +29,24 @@
 			</div>
 		{/if}
 
-		<form method="POST">
+		<form
+			method="POST"
+			use:enhance={() => {
+				loading = true;
+				return ({ update }) => {
+					update({ invalidateAll: true }).finally(async () => {
+						loading = false;
+					});
+				};
+			}}
+		>
 			<div class="my-4 flex flex-col gap-2 md:flex-row">
 				<Textarea name="prompt" placeholder="Enter prompt here" />
-				<Button type="submit">Submit</Button>
+				{#if loading}
+					<Button disabled={true}><LoaderCircle class="animate-spin" /></Button>
+				{:else}
+					<Button type="submit">Submit</Button>
+				{/if}
 			</div>
 		</form>
 
@@ -39,7 +56,7 @@
 				<ChevronsUpDown />
 			</Collapsible.Trigger>
 			<Collapsible.Content>
-				<form method="POST">
+				<form method="POST" use:enhance>
 					<div class="my-4 flex flex-col gap-2 md:flex-row">
 						<Textarea
 							class="bg-gray-100 font-mono"

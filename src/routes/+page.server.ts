@@ -5,14 +5,13 @@ import { sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import type { Actions, PageServerLoad } from './$types';
 
+export const load: PageServerLoad = async ({ platform }) => {
+	if (!platform?.env.DB) return error(500, 'Default database missing');
+	// platform.env.DB.exec("")
 
-export const load: PageServerLoad = async ({platform}) => {
-  if (!platform?.env.DB) return error(500, "Default database missing")
-    // platform.env.DB.exec("")
-
-  const db = drizzle(platform?.env.DB)
-	const tableSchema = await (db.all(
-		sql.raw("SELECT * FROM sqlite_master WHERE type='table';")
+	const db = drizzle(platform?.env.DB);
+	const tableSchema = (await db.all(
+		sql.raw("SELECT tbl_name, sql FROM sqlite_master WHERE type='table';")
 	)) as object[];
 
 	return {
@@ -22,17 +21,21 @@ export const load: PageServerLoad = async ({platform}) => {
 
 export const actions = {
 	default: async ({ request, platform }) => {
-    if (!platform?.env.DB) return error(500, "Default database missing")
+		if (!platform?.env.DB) return error(500, 'Default database missing');
 
-      const db = drizzle(platform?.env.DB)
+		const db = drizzle(platform?.env.DB);
 
 		const data = await request.formData();
 		const prompt = data.get('prompt') as string | null;
 		if (!prompt) return { error: 'Prompt is missing' };
 
-    const dbSchema = (await db.all(
-      sql.raw("SELECT sql FROM sqlite_master WHERE type='table';")
-    ) as {sql:string}[]).map(item => item.sql).join("")
+		const dbSchema = (
+			(await db.all(sql.raw("SELECT sql FROM sqlite_master WHERE type='table';"))) as {
+				sql: string;
+			}[]
+		)
+			.map((item) => item.sql)
+			.join('');
 
 		const messages = [
 			{
@@ -48,7 +51,7 @@ export const actions = {
 				content: prompt
 			}
 		];
-    // console.log(messages)
+
 		const response = (await platform?.env.AI.run('@cf/defog/sqlcoder-7b-2', {
 			messages
 		})) as AiTextGenerationOutput;
@@ -56,11 +59,11 @@ export const actions = {
 		if (!response) return { error: 'Unable to generate query' };
 
 		try {
-			const resp = await (db.all(sql.raw(response.response))) as object[];
+			const resp = (await db.all(sql.raw(response.response))) as object[];
 			return { aiquery: response.response, data: resp };
 		} catch (error) {
 			console.log(error);
-			return { error: 'Error with query' };
+			return { aiquery: response.response, error: 'Error with query' };
 		}
 	}
 } satisfies Actions;
