@@ -21,7 +21,7 @@
 	</Card.Header>
 	<Card.Content>
 		{#if errorMessage}
-			<div>
+			<div class="text-red-600">
 				{errorMessage}
 			</div>
 		{/if}

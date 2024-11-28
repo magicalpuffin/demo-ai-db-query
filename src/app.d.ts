@@ -5,6 +5,7 @@ declare global {
         interface Platform {
             env: {
                 AI:Ai
+                DB:D1Database
             }
             cf: CfProperties
             ctx: ExecutionContext
@@ -12,4 +13,5 @@ declare global {
     }
 }
 
-export { };
+export { }
+

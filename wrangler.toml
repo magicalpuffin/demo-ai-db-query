@@ -6,3 +6,8 @@ compatibility_flags    = ["nodejs_compat"]
 
 [ai]
 binding = "AI"
+
+[[d1_databases]]
+binding       = "DB"
+database_name = "demo-ai-db-query-db"
+database_id   = "e9e51932-19f3-42e2-a05c-4fc4a213f30a"
