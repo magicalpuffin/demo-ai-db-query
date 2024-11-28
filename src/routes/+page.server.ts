@@ -16,8 +16,7 @@ export const load: PageServerLoad = async ({fetch}) => {
     chunks.push(chunk)
   }
   
-  // const client = new Database(Buffer.concat(chunks), {readonly:true})
-  const client = new Database(":memory:")
+  const client = new Database(Buffer.concat(chunks), {readonly:true})
   const db = drizzle(client)
 	const tableSchema = db.all(
 		sql.raw("SELECT * FROM sqlite_master WHERE type='table';")
@@ -38,8 +37,7 @@ export const actions = {
       chunks.push(chunk)
     }
     
-    // const client = new Database(Buffer.concat(chunks), {readonly:true})
-    const client = new Database(":memory:")
+    const client = new Database(Buffer.concat(chunks), {readonly:true})
     const db = drizzle(client)
 
 
