@@ -10,6 +10,7 @@
 	import sqlLang from 'svelte-highlight/languages/sql';
 	import Highlight from 'svelte-highlight';
 	import { format } from 'sql-formatter';
+	import { slide } from 'svelte/transition';
 
 	interface Props {
 		tableData?: object[];
@@ -34,14 +35,18 @@
 				<ChevronsUpDown />
 			</Collapsible.Trigger>
 			<Collapsible.Content>
-				<div class="my-2 rounded-xl border bg-gray-100 p-4">
-					{#each promptHistory as promptText}
-						<div>
-							<span class=" font-semibold">{promptText.timestamp.toLocaleString()}:</span>
-							{promptText.prompt}
+				{#snippet child({ open })}
+					{#if open}
+						<div class="my-2 rounded-xl border bg-gray-100 p-4" transition:slide>
+							{#each promptHistory as promptText}
+								<div>
+									<span class=" font-semibold">{promptText.timestamp.toLocaleString()}:</span>
+									{promptText.prompt}
+								</div>
+							{/each}
 						</div>
-					{/each}
-				</div>
+					{/if}
+				{/snippet}
 			</Collapsible.Content>
 		</Collapsible.Root>
 		{#if errorMessage}
@@ -78,11 +83,13 @@
 				<ChevronsUpDown />
 			</Collapsible.Trigger>
 			<Collapsible.Content>
-				<Highlight
-					class="my-2 overflow-hidden rounded-lg"
-					language={sqlLang}
-					code={format(aiQuery ?? '', { language: 'sqlite' })}
-				/>
+				{#snippet child({ open })}
+					{#if open}
+						<div class="my-2 overflow-hidden rounded-lg" transition:slide>
+							<Highlight language={sqlLang} code={format(aiQuery ?? '', { language: 'sqlite' })} />
+						</div>
+					{/if}
+				{/snippet}
 
 				<!-- <form method="POST" use:enhance>
 					<div class="my-4 flex flex-col gap-2 md:flex-row">
