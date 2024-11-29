@@ -1,6 +1,15 @@
 import { error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
+function cleanQuery(input: string) {
+	const query = input.replaceAll('ILIKE', 'LIKE').replaceAll('ilike', 'like');
+
+	if (['SELECT', 'WITH', 'select', 'with'].includes(query.trim().split(' ')[0]))
+		return { aiquery: query };
+
+	return { aiquery: query, error: 'Query missing select or with statement' };
+}
+
 export const load: PageServerLoad = async ({ platform }) => {
 	if (!platform?.env.DB) return error(500, 'Default database missing');
 
@@ -61,21 +70,19 @@ export const actions = {
 		if (!response || response instanceof ReadableStream || !response.response)
 			return { error: 'Unable to generate query' };
 
-		function cleanQuery(input: string) {
-			return input.replaceAll('ILIKE', 'LIKE').replaceAll('ilike', 'like');
-		}
-
 		const generatedQuery = cleanQuery(response.response);
-
-		if (generatedQuery.trim().split(' ')[0] !== 'SELECT')
-			return { aiquery: generatedQuery, error: 'Query missing select statement' };
+		if (generatedQuery.error) return generatedQuery;
 
 		try {
-			const resp = (await platform.env.DB.prepare(generatedQuery).all()).results as object[];
-			return { aiquery: generatedQuery, data: resp };
+			const resp = (await platform.env.DB.prepare(generatedQuery.aiquery).all())
+				.results as object[];
+			return { aiquery: generatedQuery.aiquery, data: resp };
 		} catch (error) {
-			console.log(error);
-			return { aiquery: generatedQuery, error: 'Error with query' };
+			if (error instanceof Error)
+				return { aiquery: generatedQuery.aiquery, error: error.cause.message };
+
+			// console.log(error);
+			return { aiquery: generatedQuery.aiquery, error: 'Error with query' };
 		}
 	},
 	updateQuery: async ({ request, platform }) => {
@@ -85,6 +92,7 @@ export const actions = {
 		const promptUpdate = data.get('prompt_update_query') as string | null;
 		const existingQuery = data.get('query') as string | null;
 		if (!promptUpdate) return { error: 'Update prompt is missing' };
+		if (!existingQuery || existingQuery.length < 1) return { error: 'No query to update ' };
 
 		const dbSchema = (
 			await platform.env.DB.prepare("SELECT sql FROM sqlite_master WHERE type='table';").all<{
@@ -127,21 +135,18 @@ export const actions = {
 		if (!response || response instanceof ReadableStream || !response.response)
 			return { error: 'Unable to generate query' };
 
-		function cleanQuery(input: string) {
-			return input.replaceAll('ILIKE', 'LIKE').replaceAll('ilike', 'like');
-		}
-
 		const generatedQuery = cleanQuery(response.response);
-
-		if (generatedQuery.trim().split(' ')[0] !== 'SELECT')
-			return { aiquery: generatedQuery, error: 'Query missing select statement' };
+		if (generatedQuery.error) return generatedQuery;
 
 		try {
-			const resp = (await platform.env.DB.prepare(generatedQuery).all()).results as object[];
-			return { aiquery: generatedQuery, data: resp };
+			const resp = (await platform.env.DB.prepare(generatedQuery.aiquery).all())
+				.results as object[];
+			return { aiquery: generatedQuery.aiquery, data: resp };
 		} catch (error) {
-			console.log(error);
-			return { aiquery: generatedQuery, error: 'Error with query' };
+			if (error instanceof Error)
+				return { aiquery: generatedQuery.aiquery, error: error.cause.message };
+			// console.log(error);
+			return { aiquery: generatedQuery.aiquery, error: 'Error with query' };
 		}
 	}
 } satisfies Actions;

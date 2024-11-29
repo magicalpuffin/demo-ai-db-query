@@ -87,7 +87,7 @@
 			<Collapsible.Content>
 				{#snippet child({ open })}
 					{#if open}
-						<div transition:slide>
+						<div class="my-4" transition:slide>
 							<form
 								method="POST"
 								action="?/updateQuery"
@@ -101,7 +101,7 @@
 									};
 								}}
 							>
-								<div class="my-4 flex flex-col gap-2 md:flex-row">
+								<div class="flex flex-col gap-2 md:flex-row">
 									<Textarea
 										name="prompt_update_query"
 										placeholder="Enter prompt to update SQL query"
