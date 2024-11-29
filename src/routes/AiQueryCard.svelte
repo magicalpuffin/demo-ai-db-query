@@ -18,6 +18,8 @@
 	}
 	let { tableData = [], aiQuery = '', errorMessage }: Props = $props();
 	let loading = $state(false);
+	let prompt = $state('');
+	let promptHistory: { timestamp: Date; prompt: string }[] = $state([]);
 </script>
 
 <Card.Root>
@@ -26,6 +28,22 @@
 		<Card.Description>Write prompts to generate and run queries against database</Card.Description>
 	</Card.Header>
 	<Card.Content>
+		<Collapsible.Root class="my-2">
+			<Collapsible.Trigger class={buttonVariants({ variant: 'outline' })}>
+				<h3 class="text-sm font-semibold">Show History</h3>
+				<ChevronsUpDown />
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<div class="my-2 rounded-xl border bg-gray-100 p-4">
+					{#each promptHistory as promptText}
+						<div>
+							<span class=" font-semibold">{promptText.timestamp.toLocaleString()}:</span>
+							{promptText.prompt}
+						</div>
+					{/each}
+				</div>
+			</Collapsible.Content>
+		</Collapsible.Root>
 		{#if errorMessage}
 			<div class="text-red-600">
 				{errorMessage}
@@ -36,6 +54,7 @@
 			method="POST"
 			use:enhance={() => {
 				loading = true;
+				promptHistory.push({ timestamp: new Date(), prompt });
 				return ({ update }) => {
 					update({ invalidateAll: true }).finally(async () => {
 						loading = false;
@@ -44,7 +63,7 @@
 			}}
 		>
 			<div class="my-4 flex flex-col gap-2 md:flex-row">
-				<Textarea name="prompt" placeholder="Enter prompt here" />
+				<Textarea name="prompt" placeholder="Enter prompt here" bind:value={prompt} />
 				{#if loading}
 					<Button disabled={true}><LoaderCircle class="animate-spin" /></Button>
 				{:else}
