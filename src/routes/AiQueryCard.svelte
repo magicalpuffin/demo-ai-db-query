@@ -20,6 +20,7 @@
 	let { tableData = [], aiQuery = '', errorMessage }: Props = $props();
 	let loading = $state(false);
 	let prompt = $state('');
+	let updatePrompt = $state('');
 	let promptHistory: { timestamp: Date; prompt: string }[] = $state([]);
 </script>
 
@@ -57,6 +58,7 @@
 
 		<form
 			method="POST"
+			action="?/generateQuery"
 			use:enhance={() => {
 				loading = true;
 				promptHistory.push({ timestamp: new Date(), prompt });
@@ -85,8 +87,40 @@
 			<Collapsible.Content>
 				{#snippet child({ open })}
 					{#if open}
-						<div class="my-2 overflow-hidden rounded-lg" transition:slide>
-							<Highlight language={sqlLang} code={format(aiQuery ?? '', { language: 'sqlite' })} />
+						<div transition:slide>
+							<form
+								method="POST"
+								action="?/updateQuery"
+								use:enhance={() => {
+									loading = true;
+									promptHistory.push({ timestamp: new Date(), prompt: updatePrompt });
+									return ({ update }) => {
+										update({ invalidateAll: true }).finally(async () => {
+											loading = false;
+										});
+									};
+								}}
+							>
+								<div class="my-4 flex flex-col gap-2 md:flex-row">
+									<Textarea
+										name="prompt_update_query"
+										placeholder="Enter prompt to update SQL query"
+										bind:value={updatePrompt}
+									/>
+									<textarea hidden name="query" bind:value={aiQuery}></textarea>
+									{#if loading}
+										<Button disabled={true}><LoaderCircle class="animate-spin" /></Button>
+									{:else}
+										<Button type="submit">Update SQL Query</Button>
+									{/if}
+								</div>
+							</form>
+							<div class="my-2 overflow-hidden rounded-lg">
+								<Highlight
+									language={sqlLang}
+									code={format(aiQuery ?? '', { language: 'sqlite' })}
+								/>
+							</div>
 						</div>
 					{/if}
 				{/snippet}
