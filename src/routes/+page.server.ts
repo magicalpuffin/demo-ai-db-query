@@ -46,9 +46,19 @@ export const actions = {
 			}
 		];
 
-		const response = (await platform?.env.AI.run('@cf/defog/sqlcoder-7b-2', {
-			messages
-		})) as AiTextGenerationOutput;
+		const response = (await platform?.env.AI.run(
+			'@cf/defog/sqlcoder-7b-2',
+			{
+				messages
+			},
+			{
+				gateway: {
+					id: 'puffin-ai-gateway',
+					skipCache: false,
+					cacheTtl: 3360
+				}
+			}
+		)) as AiTextGenerationOutput;
 
 		if (!response) return { error: 'Unable to generate query' };
 
