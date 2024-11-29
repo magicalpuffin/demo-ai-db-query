@@ -58,14 +58,24 @@ export const actions = {
 			}
 		)) as AiTextGenerationOutput;
 
-		if (!response) return { error: 'Unable to generate query' };
+		if (!response || response instanceof ReadableStream || !response.response)
+			return { error: 'Unable to generate query' };
+
+		function cleanQuery(input: string) {
+			return input.replaceAll('ILIKE', 'LIKE').replaceAll('ilike', 'like');
+		}
+
+		const generatedQuery = cleanQuery(response.response);
+
+		if (generatedQuery.trim().split(' ')[0] !== 'SELECT')
+			return { aiquery: generatedQuery, error: 'Query missing select statement' };
 
 		try {
-			const resp = (await platform.env.DB.prepare(response.response).all()).results as object[];
-			return { aiquery: response.response, data: resp };
+			const resp = (await platform.env.DB.prepare(generatedQuery).all()).results as object[];
+			return { aiquery: generatedQuery, data: resp };
 		} catch (error) {
 			console.log(error);
-			return { aiquery: response.response, error: 'Error with query' };
+			return { aiquery: generatedQuery, error: 'Error with query' };
 		}
 	}
 } satisfies Actions;
