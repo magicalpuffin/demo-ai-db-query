@@ -23,7 +23,7 @@
 <Card.Root>
 	<Card.Header>
 		<Card.Title>AI Query</Card.Title>
-		<Card.Description>Write prompts to generate queries</Card.Description>
+		<Card.Description>Write prompts to generate and run queries against database</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		{#if errorMessage}
@@ -53,14 +53,14 @@
 			</div>
 		</form>
 
-		<Collapsible.Root>
+		<Collapsible.Root class="my-2">
 			<Collapsible.Trigger class={buttonVariants({ variant: 'outline' })}>
 				<h3 class="text-sm font-semibold">Show SQL</h3>
 				<ChevronsUpDown />
 			</Collapsible.Trigger>
 			<Collapsible.Content>
 				<Highlight
-					class="overflow-hidden rounded-lg "
+					class="my-2 overflow-hidden rounded-lg"
 					language={sqlLang}
 					code={format(aiQuery ?? '', { language: 'sqlite' })}
 				/>
@@ -78,8 +78,7 @@
 				</form> -->
 			</Collapsible.Content>
 		</Collapsible.Root>
-
-		{#if tableData[0]}
+		{#if tableData.length > 0}
 			<Table.Root>
 				<Table.Header>
 					<Table.Row>
@@ -98,6 +97,8 @@
 					{/each}
 				</Table.Body>
 			</Table.Root>
+		{:else}
+			<div>No data returned</div>
 		{/if}
 	</Card.Content>
 </Card.Root>

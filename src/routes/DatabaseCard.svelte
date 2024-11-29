@@ -7,7 +7,7 @@
 	import * as Card from '$lib/components/ui/card/';
 
 	interface Props {
-		tableSchema?: object[];
+		tableSchema?: { tbl_name: string; sql: string }[];
 	}
 	let { tableSchema = [] }: Props = $props();
 </script>
@@ -15,38 +15,34 @@
 <Card.Root>
 	<Card.Header>
 		<Card.Title>Database</Card.Title>
-		<Card.Description>Preview database tables</Card.Description>
+		<Card.Description>Preview database table schemas</Card.Description>
 	</Card.Header>
 	<Card.Content>
-		{#if tableSchema[0]}
+		{#if tableSchema.length > 0}
 			<Table.Root>
 				<Table.Header>
 					<Table.Row>
-						{#each Object.keys(tableSchema[0]) as header}
-							<Table.Head>{header}</Table.Head>
-						{/each}
+						<Table.Head>tbl_name</Table.Head>
+						<Table.Head>sql</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{#each tableSchema as dataRow}
 						<Table.Row>
-							{#each Object.entries(dataRow) as dataValue}
-								{#if dataValue[0] === 'sql'}
-									<Table.Cell>
-										<Highlight
-											class="overflow-hidden rounded-lg "
-											language={sqlLang}
-											code={format(dataValue[1], { language: 'sqlite' })}
-										/>
-									</Table.Cell>
-								{:else}
-									<Table.Cell>{dataValue[1]}</Table.Cell>
-								{/if}
-							{/each}
+							<Table.Cell>{dataRow.tbl_name}</Table.Cell>
+							<Table.Cell>
+								<Highlight
+									class="overflow-hidden rounded-lg "
+									language={sqlLang}
+									code={format(dataRow.sql, { language: 'sqlite' })}
+								/>
+							</Table.Cell>
 						</Table.Row>
 					{/each}
 				</Table.Body>
 			</Table.Root>
+		{:else}
+			<div>No data returned</div>
 		{/if}
 	</Card.Content>
 </Card.Root>

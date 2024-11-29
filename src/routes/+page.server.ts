@@ -7,8 +7,8 @@ export const load: PageServerLoad = async ({ platform }) => {
 	const tableSchema = (
 		await platform.env.DB.prepare(
 			"SELECT tbl_name, sql FROM sqlite_master WHERE type='table';"
-		).all()
-	).results as object[];
+		).all<{ tbl_name: string; sql: string }>()
+	).results;
 
 	return {
 		tableSchema
@@ -24,11 +24,10 @@ export const actions = {
 		if (!prompt) return { error: 'Prompt is missing' };
 
 		const dbSchema = (
-			(await platform.env.DB.prepare("SELECT sql FROM sqlite_master WHERE type='table';").all())
-				.results as {
+			await platform.env.DB.prepare("SELECT sql FROM sqlite_master WHERE type='table';").all<{
 				sql: string;
-			}[]
-		)
+			}>()
+		).results
 			.map((item) => item.sql)
 			.join('');
 
