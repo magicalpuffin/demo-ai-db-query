@@ -53,9 +53,7 @@ export const actions = {
 			},
 			{
 				gateway: {
-					id: 'puffin-ai-gateway',
-					skipCache: false,
-					cacheTtl: 3360
+					id: 'puffin-ai-gateway'
 				}
 			}
 		)) as AiTextGenerationOutput;
