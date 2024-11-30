@@ -5,11 +5,13 @@
 
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card/';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 
 	interface Props {
 		tableSchema?: { tbl_name: string; sql: string }[];
+		dbParams: string;
 	}
-	let { tableSchema = [] }: Props = $props();
+	let { tableSchema = [], dbParams }: Props = $props();
 </script>
 
 <Card.Root>
@@ -18,6 +20,32 @@
 		<Card.Description>Preview database table schemas</Card.Description>
 	</Card.Header>
 	<Card.Content>
+		<div class="font-semibold">Select Database:</div>
+		<div class="my-2 flex flex-row gap-2">
+			{#each ['chinook', 'sakila', 'northwind'] as buttonLabel}
+				{#if dbParams === buttonLabel}
+					<Button disabled>{buttonLabel.toUpperCase()}</Button>
+				{:else}
+					<Button href="?db={buttonLabel}">{buttonLabel.toUpperCase()}</Button>
+				{/if}
+			{/each}
+		</div>
+		<!-- {#if dbParams === 'chinook'}
+			<Button disabled>Chinook</Button>
+		{:else}
+			<Button href="?db=chinook">Chinook</Button>
+		{/if}
+		{#if dbParams === 'Sakila'}
+			<Button disabled>Sakila</Button>
+		{:else}
+			<Button href="?db=sakila">Sakila</Button>
+		{/if}
+		{#if dbParams === 'Northwind'}
+			<Button disabled>Northwind</Button>
+		{:else}
+			<Button href="?db=northwind">Northwind</Button>
+		{/if} -->
+
 		{#if tableSchema.length > 0}
 			<Table.Root>
 				<Table.Header>

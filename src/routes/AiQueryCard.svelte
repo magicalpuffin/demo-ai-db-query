@@ -16,8 +16,9 @@
 		tableData?: object[];
 		aiQuery?: string;
 		errorMessage?: string;
+		dbParams: string;
 	}
-	let { tableData = [], aiQuery = '', errorMessage }: Props = $props();
+	let { tableData = [], aiQuery = '', errorMessage, dbParams }: Props = $props();
 	let loading = $state(false);
 	let prompt = $state('');
 	let updatePrompt = $state('');
@@ -70,6 +71,7 @@
 			}}
 		>
 			<div class="my-4 flex flex-col gap-2 md:flex-row">
+				<input name="dbParams" hidden bind:value={dbParams} />
 				<Textarea name="prompt" placeholder="Enter prompt here" bind:value={prompt} />
 				{#if loading}
 					<Button disabled={true}><LoaderCircle class="animate-spin" /></Button>
@@ -102,6 +104,7 @@
 								}}
 							>
 								<div class="flex flex-col gap-2 md:flex-row">
+									<input name="dbParams" hidden bind:value={dbParams} />
 									<Textarea
 										name="prompt_update_query"
 										placeholder="Enter prompt to update SQL query"
@@ -124,18 +127,6 @@
 						</div>
 					{/if}
 				{/snippet}
-
-				<!-- <form method="POST" use:enhance>
-					<div class="my-4 flex flex-col gap-2 md:flex-row">
-						<Textarea
-							class="bg-gray-100 font-mono"
-							name="query"
-							placeholder="Enter query here"
-							value={aiQuery ?? ''}
-						/>
-						<Button type="submit">Run Query</Button>
-					</div>
-				</form> -->
 			</Collapsible.Content>
 		</Collapsible.Root>
 		{#if tableData.length > 0}

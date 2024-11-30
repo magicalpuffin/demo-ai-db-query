@@ -20,12 +20,16 @@
 		<Tabs.Trigger value="about">About</Tabs.Trigger>
 	</Tabs.List>
 	<Tabs.Content value="ai_query">
-		<AiQueryCard tableData={form?.data} aiQuery={form?.aiquery} errorMessage={form?.error}
+		<AiQueryCard
+			tableData={form?.data}
+			aiQuery={form?.aiquery}
+			errorMessage={form?.error}
+			dbParams={data.dbParams}
 		></AiQueryCard>
 	</Tabs.Content>
 
 	<Tabs.Content value="database">
-		<DatabaseCard tableSchema={data.tableSchema}></DatabaseCard>
+		<DatabaseCard tableSchema={data.tableSchema} dbParams={data.dbParams}></DatabaseCard>
 	</Tabs.Content>
 	<Tabs.Content value="about">
 		<AboutCard />

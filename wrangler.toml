@@ -8,6 +8,16 @@ compatibility_flags    = ["nodejs_compat"]
 binding = "AI"
 
 [[d1_databases]]
-binding       = "DB"
-database_name = "demo-ai-db-query-db"
-database_id   = "e9e51932-19f3-42e2-a05c-4fc4a213f30a"
+binding       = "DBCHINOOK"
+database_name = "sample-db-chinook"
+database_id   = "728ddd42-3a55-437e-a66c-cf3afa7a95c6"
+
+[[d1_databases]]
+binding       = "DBSAKILA"
+database_name = "sample-db-sakila"
+database_id   = "ef3efdc5-bb8f-49bf-9a06-8f11b3f7243b"
+
+[[d1_databases]]
+binding       = "DBNORTHWIND"
+database_name = "sample-db-northwind"
+database_id   = "933f6964-a0f7-4bc8-a6ab-d265661eb406"

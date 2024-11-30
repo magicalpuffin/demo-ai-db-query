@@ -10,30 +10,50 @@ function cleanQuery(input: string) {
 	return { aiquery: query, error: 'Query missing select or with statement' };
 }
 
-export const load: PageServerLoad = async ({ platform }) => {
-	if (!platform?.env.DB) return error(500, 'Default database missing');
+export const load: PageServerLoad = async ({ platform, url }) => {
+	const dbParams = url.searchParams.get('db') ?? 'chinook';
+	let db: D1Database | undefined;
+	if (dbParams === 'sakila') {
+		db = platform?.env.DBSAKILA;
+	} else if (dbParams === 'northwind') {
+		db = platform?.env.DBNORTHWIND;
+	} else {
+		db = platform?.env.DBCHINOOK;
+	}
+	if (!db) return error(500, 'Database is missing');
 
 	const tableSchema = (
-		await platform.env.DB.prepare(
-			"SELECT tbl_name, sql FROM sqlite_master WHERE type='table';"
-		).all<{ tbl_name: string; sql: string }>()
+		await db
+			.prepare("SELECT tbl_name, sql FROM sqlite_master WHERE type='table';")
+			.all<{ tbl_name: string; sql: string }>()
 	).results;
 
 	return {
+		dbParams,
 		tableSchema
 	};
 };
 
 export const actions = {
 	generateQuery: async ({ request, platform }) => {
-		if (!platform?.env.DB) return error(500, 'Default database missing');
-
 		const data = await request.formData();
+
+		const dbParams = data.get('dbParams') ?? 'chinook';
+		let db: D1Database | undefined;
+		if (dbParams === 'sakila') {
+			db = platform?.env.DBSAKILA;
+		} else if (dbParams === 'northwind') {
+			db = platform?.env.DBNORTHWIND;
+		} else {
+			db = platform?.env.DBCHINOOK;
+		}
+		if (!db) return error(500, 'Database is missing');
+
 		const prompt = data.get('prompt') as string | null;
 		if (!prompt) return { error: 'Prompt is missing' };
 
 		const dbSchema = (
-			await platform.env.DB.prepare("SELECT sql FROM sqlite_master WHERE type='table';").all<{
+			await db.prepare("SELECT sql FROM sqlite_master WHERE type='table';").all<{
 				sql: string;
 			}>()
 		).results
@@ -74,8 +94,7 @@ export const actions = {
 		if (generatedQuery.error) return generatedQuery;
 
 		try {
-			const resp = (await platform.env.DB.prepare(generatedQuery.aiquery).all())
-				.results as object[];
+			const resp = (await db.prepare(generatedQuery.aiquery).all()).results as object[];
 			return { aiquery: generatedQuery.aiquery, data: resp };
 		} catch (error) {
 			if (error instanceof Error)
@@ -86,16 +105,26 @@ export const actions = {
 		}
 	},
 	updateQuery: async ({ request, platform }) => {
-		if (!platform?.env.DB) return error(500, 'Default database missing');
-
 		const data = await request.formData();
+
+		const dbParams = data.get('dbParams') ?? 'chinook';
+		let db: D1Database | undefined;
+		if (dbParams === 'sakila') {
+			db = platform?.env.DBSAKILA;
+		} else if (dbParams === 'northwind') {
+			db = platform?.env.DBNORTHWIND;
+		} else {
+			db = platform?.env.DBCHINOOK;
+		}
+		if (!db) return error(500, 'Database is missing');
+
 		const promptUpdate = data.get('prompt_update_query') as string | null;
 		const existingQuery = data.get('query') as string | null;
 		if (!promptUpdate) return { error: 'Update prompt is missing' };
 		if (!existingQuery || existingQuery.length < 1) return { error: 'No query to update ' };
 
 		const dbSchema = (
-			await platform.env.DB.prepare("SELECT sql FROM sqlite_master WHERE type='table';").all<{
+			await db.prepare("SELECT sql FROM sqlite_master WHERE type='table';").all<{
 				sql: string;
 			}>()
 		).results
@@ -139,8 +168,7 @@ export const actions = {
 		if (generatedQuery.error) return generatedQuery;
 
 		try {
-			const resp = (await platform.env.DB.prepare(generatedQuery.aiquery).all())
-				.results as object[];
+			const resp = (await db.prepare(generatedQuery.aiquery).all()).results as object[];
 			return { aiquery: generatedQuery.aiquery, data: resp };
 		} catch (error) {
 			if (error instanceof Error)
