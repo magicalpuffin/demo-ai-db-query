@@ -25,6 +25,7 @@
 	let prompt = $state('');
 	let updatePrompt = $state('');
 	let promptHistory: { timestamp: Date; prompt: string }[] = $state([]);
+	let identifyTablesCheckbox = $state(true);
 </script>
 
 <Card.Root>
@@ -68,6 +69,7 @@
 				return ({ update }) => {
 					update({ invalidateAll: true }).finally(async () => {
 						loading = false;
+						identifyTablesCheckbox = true;
 					});
 				};
 			}}
@@ -82,7 +84,8 @@
 						<Button type="submit">Submit</Button>
 					{/if}
 					<div class="w-36">
-						<Checkbox name="identifyTables" checked={true} /><span>Identify tables</span>
+						<input hidden name="identifyTables" bind:value={identifyTablesCheckbox} />
+						<Checkbox bind:checked={identifyTablesCheckbox} /><span>Identify tables</span>
 					</div>
 				</div>
 			</div>

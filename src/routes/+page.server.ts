@@ -88,7 +88,7 @@ export const actions = {
 		let dbSchema: string;
 		let matchedTables: string[] = [];
 
-		if (identifyTables) {
+		if (identifyTables === 'true') {
 			if (!platform?.env.VECTORIZE) error(500, 'Vector database is missing');
 
 			const queryEmbedding = (await platform.env.AI.run(
