@@ -1,38 +1,7 @@
-# sv
+# Demo-AI-DB-Query
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+This project was created to experiment around with using AI to write SQL queries. User prompts are converted to text embeddings to identify relevant SQL table schemas. Then the identified table schemas and user prompt is passed to the LLM to generate the SQL code.
 
-## Creating a project
+Created using `SvelteKit` and deployed using `Cloudflare`. UI created with `shadcn-svelte`. The LLM model used for generating SQL queries is `defog/sqlcoder-7b-2`.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+![Example Screenshot](/docs/AI%20Query%20Screenshot.png)
