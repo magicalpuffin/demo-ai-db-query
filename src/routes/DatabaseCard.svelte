@@ -17,7 +17,7 @@
 <Card.Root>
 	<Card.Header>
 		<Card.Title>Database</Card.Title>
-		<Card.Description>Preview database table schemas</Card.Description>
+		<Card.Description>Preview database table schemas and select dataset</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<div class="font-semibold">Select Database:</div>

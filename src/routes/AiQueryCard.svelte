@@ -31,7 +31,7 @@
 <Card.Root>
 	<Card.Header>
 		<Card.Title>AI Query</Card.Title>
-		<Card.Description>Write prompts to generate and run queries against database</Card.Description>
+		<Card.Description>Write a prompt to generate and execute queries</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<Collapsible.Root class="my-2">
