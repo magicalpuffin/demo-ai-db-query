@@ -7,6 +7,10 @@ compatibility_flags    = ["nodejs_compat"]
 [ai]
 binding = "AI"
 
+[[vectorize]]
+binding    = "VECTORIZE"
+index_name = "demo-ai-db-query-vector"
+
 [[d1_databases]]
 binding       = "DBCHINOOK"
 database_name = "sample-db-chinook"

@@ -11,14 +11,16 @@
 	import Highlight from 'svelte-highlight';
 	import { format } from 'sql-formatter';
 	import { slide } from 'svelte/transition';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 
 	interface Props {
 		tableData?: object[];
 		aiQuery?: string;
+		matchedTables?: string[];
 		errorMessage?: string;
 		dbParams: string;
 	}
-	let { tableData = [], aiQuery = '', errorMessage, dbParams }: Props = $props();
+	let { tableData = [], aiQuery = '', matchedTables, errorMessage, dbParams }: Props = $props();
 	let loading = $state(false);
 	let prompt = $state('');
 	let updatePrompt = $state('');
@@ -73,11 +75,16 @@
 			<div class="my-4 flex flex-col gap-2 md:flex-row">
 				<input name="dbParams" hidden bind:value={dbParams} />
 				<Textarea name="prompt" placeholder="Enter prompt here" bind:value={prompt} />
-				{#if loading}
-					<Button disabled={true}><LoaderCircle class="animate-spin" /></Button>
-				{:else}
-					<Button type="submit">Submit</Button>
-				{/if}
+				<div class="flex flex-col gap-2">
+					{#if loading}
+						<Button disabled={true}><LoaderCircle class="animate-spin" /></Button>
+					{:else}
+						<Button type="submit">Submit</Button>
+					{/if}
+					<div class="w-36">
+						<Checkbox name="identifyTables" checked={true} /><span>Identify tables</span>
+					</div>
+				</div>
 			</div>
 		</form>
 
@@ -90,6 +97,9 @@
 				{#snippet child({ open })}
 					{#if open}
 						<div class="my-4" transition:slide>
+							{#if matchedTables && matchedTables.length > 0}
+								<div>Tables identified: {JSON.stringify(matchedTables)}</div>
+							{/if}
 							<form
 								method="POST"
 								action="?/updateQuery"

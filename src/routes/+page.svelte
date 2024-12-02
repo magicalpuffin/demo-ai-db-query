@@ -23,6 +23,7 @@
 		<AiQueryCard
 			tableData={form?.data}
 			aiQuery={form?.aiquery}
+			matchedTables={form?.matchedTables}
 			errorMessage={form?.error}
 			dbParams={data.dbParams}
 		></AiQueryCard>

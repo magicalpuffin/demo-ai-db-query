@@ -5,6 +5,7 @@ declare global {
 		interface Platform {
 			env: {
 				AI: Ai;
+				VECTORIZE: Vectorize;
 				DBCHINOOK: D1Database;
 				DBSAKILA: D1Database;
 				DBNORTHWIND: D1Database;
