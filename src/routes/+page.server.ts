@@ -7,12 +7,15 @@ interface EmbeddingResponse {
 }
 
 function cleanQuery(input: string) {
-	const query = input.replaceAll('ILIKE', 'LIKE').replaceAll('ilike', 'like');
+	const query = input.replaceAll('ILIKE', 'LIKE').replaceAll('ilike', 'like').trim();
 
-	if (['SELECT', 'WITH', 'select', 'with'].includes(query.trim().split(' ')[0]))
-		return { aiquery: query };
-
-	return { aiquery: query, error: 'Query missing select or with statement' };
+	if (!['SELECT', 'WITH', 'select', 'with'].includes(query.split(' ')[0])) {
+		return { aiquery: query, error: 'Query missing select or with statement' };
+	}
+	if (query.split(';')[1] !== '') {
+		return { aiquery: query, error: 'Unable to query multiple statements' };
+	}
+	return { aiquery: query };
 }
 
 export const load: PageServerLoad = async ({ platform, url }) => {
