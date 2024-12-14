@@ -76,7 +76,11 @@
 		>
 			<div class="my-4 flex flex-col gap-2 md:flex-row">
 				<input name="dbParams" hidden bind:value={dbParams} />
-				<Textarea name="prompt" placeholder="Enter prompt here" bind:value={prompt} />
+				<Textarea
+					name="prompt"
+					placeholder="Enter prompt to generate query. Ex. List the top 5 artists with most albums"
+					bind:value={prompt}
+				/>
 				<div class="flex flex-col gap-2">
 					{#if loading}
 						<Button disabled={true}><LoaderCircle class="animate-spin" /></Button>

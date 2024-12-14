@@ -4,4 +4,9 @@ This project was created to experiment around with using AI to write SQL queries
 
 Created using `SvelteKit` and deployed using `Cloudflare`. UI created with `shadcn-svelte`. The LLM model used for generating SQL queries is `defog/sqlcoder-7b-2`.
 
-![Example Screenshot](/docs/AI%20Query%20Screenshot.png)
+
+**Example Showcase**
+![Demo ai db showcase ](/docs/20241210_demo_ai_db_showcase.gif)
+
+**Example Database Showcase**
+![Demo ai db databases showcase ](/docs/20241210_demo_ai_db_databases_showcase.gif)

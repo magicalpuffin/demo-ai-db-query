@@ -24,6 +24,11 @@
 			</p>
 			<p>Using Chinook, Sakila, and Northwind Traders SQLite data sets.</p>
 			<p>
+				Blog Post at: <a href="https://mli.puffinsystems.com/blog/creating-ai-sql-query-sveltekit"
+					>https://mli.puffinsystems.com/blog/creating-ai-sql-query-sveltekit</a
+				>
+			</p>
+			<p>
 				Source code at: <a href="https://github.com/magicalpuffin/demo-ai-db-query"
 					>https://github.com/magicalpuffin/demo-ai-db-query</a
 				>

@@ -85,6 +85,7 @@ export const actions = {
 
 		const prompt = data.get('prompt') as string | null;
 		if (!prompt) return { error: 'Prompt is missing' };
+		if (prompt.length > 400) return { error: 'Prompt exceeded character limit' };
 
 		const identifyTables = data.get('identifyTables') as string | null;
 
@@ -94,15 +95,23 @@ export const actions = {
 		if (identifyTables === 'true') {
 			if (!platform?.env.VECTORIZE) error(500, 'Vector database is missing');
 
-			const queryEmbedding = (await platform.env.AI.run(
-				'@cf/baai/bge-base-en-v1.5',
-				{ text: prompt },
-				{
-					gateway: {
-						id: 'puffin-ai-gateway'
+			let queryEmbedding: EmbeddingResponse;
+			try {
+				queryEmbedding = (await platform.env.AI.run(
+					'@cf/baai/bge-base-en-v1.5',
+					{ text: prompt },
+					{
+						gateway: {
+							id: 'puffin-ai-gateway'
+						}
 					}
-				}
-			)) as EmbeddingResponse;
+				)) as EmbeddingResponse;
+			} catch (e) {
+				if (!(e instanceof Error)) return error(500);
+				console.log('error is at embedding');
+				console.log(e);
+				if (e.message === '2003: Rate limited') return error(429, 'Reached rate limit');
+			}
 
 			const returnedMatches = await platform.env.VECTORIZE.query(queryEmbedding.data[0], {
 				namespace: dbParams,
@@ -146,17 +155,25 @@ export const actions = {
 			}
 		];
 
-		const response = (await platform?.env.AI.run(
-			'@cf/defog/sqlcoder-7b-2',
-			{
-				messages
-			},
-			{
-				gateway: {
-					id: 'puffin-ai-gateway'
+		let response: AiTextGenerationOutput;
+		try {
+			response = (await platform?.env.AI.run(
+				'@cf/defog/sqlcoder-7b-2',
+				{
+					messages
+				},
+				{
+					gateway: {
+						id: 'puffin-ai-gateway'
+					}
 				}
-			}
-		)) as AiTextGenerationOutput;
+			)) as AiTextGenerationOutput;
+		} catch (e) {
+			if (!(e instanceof Error)) return error(500);
+			console.log('error is at embedding');
+			console.log(e);
+			if (e.message === '2003: Rate limited') return error(429, 'Reached rate limit');
+		}
 
 		if (!response || response instanceof ReadableStream || !response.response)
 			return { matchedTables, error: 'Unable to generate query' };
@@ -192,6 +209,7 @@ export const actions = {
 		const promptUpdate = data.get('prompt_update_query') as string | null;
 		const existingQuery = data.get('query') as string | null;
 		if (!promptUpdate) return { error: 'Update prompt is missing' };
+		if (promptUpdate.length > 400) return { error: 'Prompt exceeded character limit' };
 		if (!existingQuery || existingQuery.length < 1) return { error: 'No query to update ' };
 
 		const dbSchema = (
@@ -220,17 +238,25 @@ export const actions = {
 			}
 		];
 
-		const response = (await platform?.env.AI.run(
-			'@cf/defog/sqlcoder-7b-2',
-			{
-				messages
-			},
-			{
-				gateway: {
-					id: 'puffin-ai-gateway'
+		let response: AiTextGenerationOutput;
+		try {
+			response = (await platform?.env.AI.run(
+				'@cf/defog/sqlcoder-7b-2',
+				{
+					messages
+				},
+				{
+					gateway: {
+						id: 'puffin-ai-gateway'
+					}
 				}
-			}
-		)) as AiTextGenerationOutput;
+			)) as AiTextGenerationOutput;
+		} catch (e) {
+			if (!(e instanceof Error)) return error(500);
+			console.log('error is at embedding');
+			console.log(e);
+			if (e.message === '2003: Rate limited') return error(429, 'Reached rate limit');
+		}
 
 		if (!response || response instanceof ReadableStream || !response.response)
 			return { error: 'Unable to generate query' };
